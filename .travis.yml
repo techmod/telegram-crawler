@@ -1,0 +1,36 @@
+language: python
+matrix:
+    include:
+        - os: osx
+          language: generic
+        - os: linux
+          sudo: required
+          python: 3.6
+before_install:
+
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then chmod ugo+x ./travis-scripts/pre_install.linux.sh; ./travis-scripts/pre_install.linux.sh ;fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then   chmod ugo+x ./travis-scripts/pre_install.macos.sh; ./travis-scripts/pre_install.macos.sh ;fi
+install:
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then chmod ugo+x ./travis-scripts/install.linux.sh; ./travis-scripts/install.linux.sh ;fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then   chmod ugo+x ./travis-scripts/install.macos.sh; ./travis-scripts/install.macos.sh ;fi
+script: true
+deploy:
+- provider: releases
+  api_key:
+    secure: $GITHUB_API_KEY
+  file:
+    - "dist/telegram_messages_dump_linux.tar.gz"
+    - "dist/telegram_messages_dump_windows.zip"
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = "linux"
+- provider: releases
+  api_key:
+    secure: $GITHUB_API_KEY
+  file:
+    - "dist/telegram_messages_dump_darwin.tar.gz"
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = "osx"
